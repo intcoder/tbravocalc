@@ -1,10 +1,14 @@
 package net.intcoder.tbravocalc;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import net.intcoder.tbravocalc.bc.CodeGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.tools.*;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -15,44 +19,26 @@ import java.util.zip.ZipOutputStream;
 
 public class TCalculator {
     public static void main(String... args) throws Exception {
-        double target = 3101;
-        double[] spreadsheet = new double[]{
-                780,
-                184,
-                688,
-                280,
-                414,
-                3135,
-                1499,
-                654,
-                652,
-                1000,
-                2791,
-                120,
-                120,
-                120,
-                358,
-                120,
-                99,
-                198,
-                50,
-                120,
-                120,
-                150,
-                265,
-                290,
-                83,
-                279,
-                250,
-                170,
-                210,
-                746,
-                5330,
-                //99.98
-        };
-        int depth = 17;
 
-        ArrayUtils.reverse(spreadsheet);
+        OptionParser optionsParser = new OptionParser();
+        OptionSpec<String> srcOption = optionsParser.acceptsAll(Arrays.asList("spreadsheet", "src", "s")).withRequiredArg().ofType(String.class);
+        OptionSpec<Double> targetOption = optionsParser.acceptsAll(Arrays.asList("target", "t")).withRequiredArg().ofType(Double.class);
+        OptionSpec<Integer> depthOption = optionsParser.acceptsAll(Arrays.asList("depth", "d")).withRequiredArg().ofType(Integer.class);
+        OptionSpec<Void> reversedOption = optionsParser.acceptsAll(Arrays.asList("reversed", "r"));
+
+        OptionSet optionSet = optionsParser.parse(args);
+
+        if (!optionSet.has(srcOption) || !optionSet.has(targetOption)) {
+            printUsage();
+            return;
+        }
+
+        double target = optionSet.valueOf(targetOption);
+        double[] spreadsheet = parseSpreadSheet(optionSet.valueOf(srcOption));
+        int depth = optionSet.has(depthOption) ? optionSet.valueOf(depthOption) : spreadsheet.length;
+        boolean reversed = optionSet.has(reversedOption);
+
+        if (reversed) ArrayUtils.reverse(spreadsheet);
 
         var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
@@ -101,5 +87,14 @@ public class TCalculator {
         method.invoke(null, spreadsheet, target);
 
         FileUtils.deleteQuietly(compiledJar.toFile());
+    }
+
+    public static void printUsage() {
+        System.out.println("ERROR!");
+    }
+
+    protected static double[] parseSpreadSheet(String filePath) throws IOException {
+        var path = Path.of(filePath);
+        return Files.readAllLines(path).stream().mapToDouble(Double::valueOf).toArray();
     }
 }
