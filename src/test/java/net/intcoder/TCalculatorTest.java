@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TCalculatorTest {
     @Test
     void printPath() {
+        TCalculator.printPath(99.98);
         TCalculator.printPath(1, 2, 3, 4);
     }
 }
