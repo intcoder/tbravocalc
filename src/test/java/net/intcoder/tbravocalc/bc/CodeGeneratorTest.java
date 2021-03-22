@@ -1,4 +1,4 @@
-package net.intcoder.bc;
+package net.intcoder.tbravocalc.bc;
 
 import org.junit.jupiter.api.Test;
 

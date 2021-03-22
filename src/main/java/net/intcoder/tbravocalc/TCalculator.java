@@ -1,8 +1,7 @@
-package net.intcoder;
+package net.intcoder.tbravocalc;
 
-import net.intcoder.bc.CodeGenerator;
+import net.intcoder.tbravocalc.bc.CodeGenerator;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.tools.*;
@@ -10,7 +9,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -82,7 +80,7 @@ public class TCalculator {
         try (var in = Files.newInputStream(compiled);
              var out = Files.newOutputStream(compiledJar)) {
             var zipOut = new ZipOutputStream(out);
-            var entry = new ZipEntry("net/intcoder/bc/Calculator.class");
+            var entry = new ZipEntry("net/intcoder/tbravocalc/bc/Calculator.class");
 
             zipOut.putNextEntry(entry);
             in.transferTo(zipOut);
@@ -98,7 +96,7 @@ public class TCalculator {
 
         var cl = new URLClassLoader(new URL[]{compiledJar.toUri().toURL()});
 
-        Class<?> c = cl.loadClass("net.intcoder.bc.Calculator");
+        Class<?> c = cl.loadClass("net.intcoder.tbravocalc.bc.Calculator");
         var method = c.getDeclaredMethod("calculate", double[].class, Double.TYPE);
         method.invoke(null, spreadsheet, target);
 

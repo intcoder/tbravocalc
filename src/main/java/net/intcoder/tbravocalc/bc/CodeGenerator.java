@@ -1,4 +1,4 @@
-package net.intcoder.bc;
+package net.intcoder.tbravocalc.bc;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +24,7 @@ public class CodeGenerator {
             """;
 
     private static final String tm = """
-            package net.intcoder.bc;
+            package net.intcoder.tbravocalc.bc;
                         
             import java.util.Arrays;
             import java.util.stream.Collectors;
