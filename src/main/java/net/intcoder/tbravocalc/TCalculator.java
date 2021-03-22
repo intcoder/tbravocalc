@@ -6,6 +6,7 @@ import joptsimple.OptionSpec;
 import net.intcoder.tbravocalc.bc.CodeGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.tools.*;
 import java.io.IOException;
@@ -40,13 +41,18 @@ public class TCalculator {
 
         if (reversed) ArrayUtils.reverse(spreadsheet);
 
+        System.out.println("Target: " + target);
+        System.out.println("Spreadsheet: " + StringUtils.join(ArrayUtils.toObject(spreadsheet), "|"));
+        System.out.println("Depth: " + depth);
+        System.out.println("Reversed: " + reversed);
+
         var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
         Path tmpDir = Files.createTempDirectory("tbravocalc");
         Path srcCodeFile = tmpDir.resolve("Calculator.java");
         Files.writeString(srcCodeFile, srcCode);
 
-        System.out.println(srcCodeFile);
+        System.out.println("Calculator src: " + srcCodeFile);
 
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -58,7 +64,7 @@ public class TCalculator {
                 null, compilationUnits);
         boolean success = task.call();
         fileManager.close();
-        System.out.println("Success: " + success);
+        System.out.println("Compilation: " + (success ? "success" : "error"));
 
         Path compiled = tmpDir.resolve("Calculator.class");
         Path compiledJar = Files.createTempFile(null, null);
