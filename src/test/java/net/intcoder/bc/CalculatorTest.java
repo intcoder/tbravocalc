@@ -1,5 +1,6 @@
 package net.intcoder.bc;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,8 @@ class CalculatorTest {
                 5330,
                 //99.98
         };
+
+        ArrayUtils.reverse(spreadsheet);
 
         Calculator.calculate(spreadsheet, target);
     }

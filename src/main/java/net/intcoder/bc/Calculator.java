@@ -1,14 +1,10 @@
 package net.intcoder.bc;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Calculator {
     public static void calculate(double[] spreadsheet, double target) {
-        ArrayUtils.reverse(spreadsheet);
-
 
         var filteredList = Arrays.stream(spreadsheet).filter(n -> n <= target)
                 .boxed()

@@ -23,6 +23,43 @@ public class CodeGenerator {
             }
             """;
 
+    private static final String tm = """
+            package net.intcoder.bc;
+                        
+            import java.util.Arrays;
+            import java.util.stream.Collectors;
+                        
+            public class Calculator {
+                public static void calculate(double[] spreadsheet, double target) {
+                        
+                    var filteredList = Arrays.stream(spreadsheet).filter(n -> n <= target)
+                            .boxed()
+                            .collect(Collectors.toList());
+                        
+                    System.out.println("Size: " + filteredList.size());
+                        
+                    double minSum = 0;
+                        
+                    <for>
+                        
+                    System.out.println("min sum = " + minSum);
+                }
+                        
+                protected static void printPath(double... path) {
+                    Arrays.stream(path).boxed().map(n -> n + " + ").forEach(System.out::print);
+                    System.out.print("\\b\\b\\b");
+                    System.out.println(" = " + Arrays.stream(path).sum());
+                }
+                        
+                protected static void debugPath(double... path) {
+                    if (true) return;
+                    System.out.print("\\tDEBUG: ");
+                    printPath(path);
+                }
+            }
+                        
+            """;
+
     public String generate(int depth) {
         var sb = new StringBuilder();
         var s = t1;
@@ -38,7 +75,8 @@ public class CodeGenerator {
         s = s.replace("\r\n", "");
         s = s.replace("\n", "");
         s = StringUtils.normalizeSpace(s);
-        return s;
+
+        return tm.replace("<for>", s);
     }
 
     protected String generateSumN(int length) {
