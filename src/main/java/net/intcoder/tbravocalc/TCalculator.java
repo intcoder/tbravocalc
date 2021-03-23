@@ -22,6 +22,8 @@ public class TCalculator {
         OptionSpec<Integer> depthOption = optionsParser.acceptsAll(Arrays.asList("depth", "d")).withRequiredArg().ofType(Integer.class);
         OptionSpec<Void> reversedOption = optionsParser.acceptsAll(Arrays.asList("reversed", "r"));
         OptionSpec<Void> printAllOption = optionsParser.acceptsAll(Arrays.asList("all", "a"));
+        OptionSpec<String> outputFileOption = optionsParser.acceptsAll(Arrays.asList("output", "out", "o")).withRequiredArg().ofType(String.class);
+        OptionSpec<Integer> logLevelOption = optionsParser.acceptsAll(Arrays.asList("log", "l")).withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
         OptionSet optionSet = optionsParser.parse(args);
 
@@ -35,6 +37,14 @@ public class TCalculator {
         int depth = optionSet.has(depthOption) ? optionSet.valueOf(depthOption) : spreadsheet.length;
         boolean reversed = optionSet.has(reversedOption);
         boolean printAll = optionSet.has(printAllOption);
+        String outputFile = optionSet.valueOf(outputFileOption);
+        int logLevel = optionSet.valueOf(logLevelOption);
+
+
+        Path outputPath = outputFile != null ? Path.of(outputFile) : null;
+        boolean log = logLevel > 0;
+        boolean debug = logLevel > 1;
+        boolean trace = logLevel > 2;
 
         if (reversed) ArrayUtils.reverse(spreadsheet);
 
@@ -49,8 +59,53 @@ public class TCalculator {
 
         Class<?> c = CodeCompiler.compile("net.intcoder.tbravocalc.bc.Calculator", srcCode);
 
+        var outWriter = outputPath != null ? Files.newBufferedWriter(outputPath) : null;
+
+        var instance = c.getDeclaredConstructor(PathPrinter.class).newInstance(new PathPrinter() {
+
+            private final boolean writeToFile = outWriter != null;
+
+            @Override
+            public void printPath(double... path) {
+                print("", true, log, path);
+            }
+
+            @Override
+            public void debugPath(double... path) {
+                print("\tDEBUG: ", false, debug, path);
+            }
+
+            @Override
+            public void tracePath(double... path) {
+                print("\tTRACE: ", false, trace, path);
+            }
+
+            private void print(String prefix, boolean print, boolean write, double... path) {
+                var sb = new StringBuilder();
+                sb.append(prefix);
+                Arrays.stream(path).boxed().map(n -> n + " + ").forEach(sb::append);
+                sb.delete(sb.length()-3, sb.length());
+                sb.append(" = ").append(Arrays.stream(path).sum());
+
+                var s = sb.toString();
+
+                if (print) System.out.println(s);
+
+                if (writeToFile && write) {
+                    try {
+                        outWriter.write(s + "\n");
+                        outWriter.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
         var method = c.getDeclaredMethod("calculate", double[].class, Double.TYPE);
-        method.invoke(null, spreadsheet, target);
+        method.invoke(instance, spreadsheet, target);
+
+        if (outWriter != null) outWriter.close();
     }
 
     public static void printUsage() {

@@ -24,10 +24,13 @@ public class CodeGenerator {
             	
                 if (sum<n> > minSum && sum<n> <= target) {
             		minSum = sum<n>;
-                    printPath(<cn>);
+                    pathPrinter.printPath(<cn>);
                 } else if (sum<n> <= target) {
-                	debugPath(<cn>);
+                	pathPrinter.debugPath(<cn>);
+                } else {
+                    pathPrinter.tracePath(<cn>);
                 }
+                
                 <for>
             }
             """;
@@ -39,10 +42,13 @@ public class CodeGenerator {
             	var sum<n> = <sumn>;
                 if (sum<n> >= minSum && sum<n> <= target) {
             		minSum = sum<n>;
-                    printPath(<cn>);
+                    pathPrinter.printPath(<cn>);
                 } else if (sum<n> <= target) {
-                	debugPath(<cn>);
+                	pathPrinter.debugPath(<cn>);
+                } else {
+                    pathPrinter.tracePath(<cn>);
                 }
+                
                 <for>
             }
             """;
@@ -52,12 +58,19 @@ public class CodeGenerator {
                         
             import java.util.Arrays;
             import java.util.stream.Collectors;
+            
+            import net.intcoder.tbravocalc.PathPrinter;
                         
             public class Calculator {
             
-                private static boolean continueCalculate = true;
+                private PathPrinter pathPrinter;
+                private boolean continueCalculate = true;
+                
+                public Calculator(PathPrinter pathPrinter) {
+                    this.pathPrinter = pathPrinter;
+                }
             
-                public static void calculate(double[] spreadsheet, double target) {
+                public void calculate(double[] spreadsheet, double target) {
                         
                     var filteredList = Arrays.stream(spreadsheet).filter(n -> n <= target)
                             .boxed()
@@ -70,18 +83,6 @@ public class CodeGenerator {
                     <for>
                         
                     System.out.println("min sum = " + minSum);
-                }
-                        
-                protected static void printPath(double... path) {
-                    Arrays.stream(path).boxed().map(n -> n + " + ").forEach(System.out::print);
-                    System.out.print("\\b\\b\\b");
-                    System.out.println(" = " + Arrays.stream(path).sum());
-                }
-                        
-                protected static void debugPath(double... path) {
-                    if (true) return;
-                    System.out.print("\\tDEBUG: ");
-                    printPath(path);
                 }
             }
                         
