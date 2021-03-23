@@ -21,6 +21,7 @@ public class TCalculator {
         OptionSpec<Double> targetOption = optionsParser.acceptsAll(Arrays.asList("target", "t")).withRequiredArg().ofType(Double.class);
         OptionSpec<Integer> depthOption = optionsParser.acceptsAll(Arrays.asList("depth", "d")).withRequiredArg().ofType(Integer.class);
         OptionSpec<Void> reversedOption = optionsParser.acceptsAll(Arrays.asList("reversed", "r"));
+        OptionSpec<Void> printAllOption = optionsParser.acceptsAll(Arrays.asList("all", "a"));
 
         OptionSet optionSet = optionsParser.parse(args);
 
@@ -33,6 +34,7 @@ public class TCalculator {
         double[] spreadsheet = parseSpreadSheet(optionSet.valueOf(srcOption));
         int depth = optionSet.has(depthOption) ? optionSet.valueOf(depthOption) : spreadsheet.length;
         boolean reversed = optionSet.has(reversedOption);
+        boolean printAll = optionSet.has(printAllOption);
 
         if (reversed) ArrayUtils.reverse(spreadsheet);
 
@@ -40,8 +42,9 @@ public class TCalculator {
         System.out.println("Spreadsheet: " + StringUtils.join(ArrayUtils.toObject(spreadsheet), "|"));
         System.out.println("Depth: " + depth);
         System.out.println("Reversed: " + reversed);
+        System.out.println("Print all paths: " + printAll);
 
-        var cg = new CodeGenerator();
+        var cg = new CodeGenerator(printAll);
         var srcCode = cg.generate(depth);
 
         Class<?> c = CodeCompiler.compile("net.intcoder.tbravocalc.bc.Calculator", srcCode);

@@ -6,12 +6,36 @@ public class CodeGenerator {
 
     private static final String forTemplate = """
             for (double n0 : filteredList) {
+                if (!continueCalculate) break;
+            
             	<for>
             }
             """;
 
     private static final String subForTemplate = """
             for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
+                if (!continueCalculate) break;
+            
+            	var sum<n> = <sumn>;
+            	
+            	if (sum<n> == target) {
+            	    continueCalculate = false;
+            	}
+            	
+                if (sum<n> > minSum && sum<n> <= target) {
+            		minSum = sum<n>;
+                    printPath(<cn>);
+                } else if (sum<n> <= target) {
+                	debugPath(<cn>);
+                }
+                <for>
+            }
+            """;
+
+    private static final String subForTemplatePrintAll = """
+            for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
+                if (!continueCalculate) break;
+            
             	var sum<n> = <sumn>;
                 if (sum<n> >= minSum && sum<n> <= target) {
             		minSum = sum<n>;
@@ -30,6 +54,9 @@ public class CodeGenerator {
             import java.util.stream.Collectors;
                         
             public class Calculator {
+            
+                private static boolean continueCalculate = true;
+            
                 public static void calculate(double[] spreadsheet, double target) {
                         
                     var filteredList = Arrays.stream(spreadsheet).filter(n -> n <= target)
@@ -60,12 +87,18 @@ public class CodeGenerator {
                         
             """;
 
+    private boolean printAll;
+
+    public CodeGenerator(boolean printAll) {
+        this.printAll = printAll;
+    }
+
     public String generate(int depth) {
         var sb = new StringBuilder();
         var s = forTemplate;
 
         for (int i = 0; i < depth; i++) {
-            s = s.replace("<for>", subForTemplate);
+            s = s.replace("<for>", printAll ? subForTemplatePrintAll : subForTemplate);
             s = s.replace("<n>", String.valueOf(i+1));
             s = s.replace("<sumn>", generateSumN(i+2));
             s = s.replace("<cn>", generateCN(i+2));
