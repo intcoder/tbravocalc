@@ -4,13 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CodeGenerator {
 
-    private static final String t1 = """
+    private static final String forTemplate = """
             for (double n0 : filteredList) {
             	<for>
             }
             """;
 
-    private static final String t2 = """
+    private static final String subForTemplate = """
             for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
             	var sum<n> = <sumn>;
                 if (sum<n> > minSum && sum<n> <= target) {
@@ -23,7 +23,7 @@ public class CodeGenerator {
             }
             """;
 
-    private static final String tm = """
+    private static final String classTemplate = """
             package net.intcoder.tbravocalc.bc;
                         
             import java.util.Arrays;
@@ -62,10 +62,10 @@ public class CodeGenerator {
 
     public String generate(int depth) {
         var sb = new StringBuilder();
-        var s = t1;
+        var s = forTemplate;
 
         for (int i = 0; i < depth; i++) {
-            s = s.replace("<for>", t2);
+            s = s.replace("<for>", subForTemplate);
             s = s.replace("<n>", String.valueOf(i+1));
             s = s.replace("<sumn>", generateSumN(i+2));
             s = s.replace("<cn>", generateCN(i+2));
@@ -76,7 +76,7 @@ public class CodeGenerator {
         s = s.replace("\n", "");
         s = StringUtils.normalizeSpace(s);
 
-        return tm.replace("<for>", s);
+        return classTemplate.replace("<for>", s);
     }
 
     protected String generateSumN(int length) {
