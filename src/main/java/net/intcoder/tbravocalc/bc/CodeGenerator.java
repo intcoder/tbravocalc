@@ -13,7 +13,7 @@ public class CodeGenerator {
     private static final String subForTemplate = """
             for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
             	var sum<n> = <sumn>;
-                if (sum<n> > minSum && sum<n> <= target) {
+                if (sum<n> >= minSum && sum<n> <= target) {
             		minSum = sum<n>;
                     printPath(<cn>);
                 } else if (sum<n> <= target) {
