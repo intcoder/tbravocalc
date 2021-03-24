@@ -1,4 +1,4 @@
-package net.intcoder.tbravocalc.bc;
+package net.intcoder.bc;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,30 +17,31 @@ public class CodeGenerator {
             for (int i<n> = i<n-1>+1; i<n> < spreadsheet.length; i<n>++) {
                 double n<n> = spreadsheet[i<n>];
                 if (!continueCalculate) break;
-                continueCalculate = !pathChecker.check(<cn>);
+                continueCalculate = !pathHandler.handle(<cn>);
                 
                 <for>
             }
             """;
 
     private static final String classTemplate = """
-            package net.intcoder.tbravocalc.bc;
+            package net.intcoder.tbravocalc.calculator;
                         
             import java.util.Arrays;
             import java.util.stream.Collectors;
             
-            import net.intcoder.tbravocalc.calculator.PathChecker;
+            import net.intcoder.tbravocalc.calculator.PathGenerator;
+            import net.intcoder.tbravocalc.calculator.PathHandler;
                         
-            public class Calculator {
+            public class PathGeneratorImpl implements PathGenerator {
             
-                private PathChecker pathChecker;
+                private PathHandler pathHandler;
                 private boolean continueCalculate = true;
                 
-                public Calculator(PathChecker pathChecker) {
-                    this.pathChecker = pathChecker;
+                public PathGeneratorImpl(PathHandler pathHandler) {
+                    this.pathHandler = pathHandler;
                 }
             
-                public void calculate(double... spreadsheet) {
+                public void start(double... spreadsheet) {
                         
                     var filteredList = Arrays.stream(spreadsheet)
                             .boxed()

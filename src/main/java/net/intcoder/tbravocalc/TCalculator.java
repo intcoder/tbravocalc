@@ -3,10 +3,11 @@ package net.intcoder.tbravocalc;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import net.intcoder.tbravocalc.bc.CodeCompiler;
-import net.intcoder.tbravocalc.bc.CodeGenerator;
-import net.intcoder.tbravocalc.calculator.PathChecker;
-import net.intcoder.tbravocalc.calculator.PathCheckerImpl;
+import net.intcoder.bc.CodeCompiler;
+import net.intcoder.bc.CodeGenerator;
+import net.intcoder.tbravocalc.calculator.PathHandler;
+import net.intcoder.tbravocalc.calculator.PathHandlerImpl;
+import net.intcoder.tbravocalc.calculator.PathGenerator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,8 +25,8 @@ public class TCalculator {
         OptionSpec<Integer> depthOption = optionsParser.acceptsAll(Arrays.asList("depth", "d")).withRequiredArg().ofType(Integer.class);
         OptionSpec<Void> reversedOption = optionsParser.acceptsAll(Arrays.asList("reversed", "r"));
         OptionSpec<Void> printAllOption = optionsParser.acceptsAll(Arrays.asList("all", "a"));
-        OptionSpec<String> outputFileOption = optionsParser.acceptsAll(Arrays.asList("output", "out", "o")).withRequiredArg().ofType(String.class);
-        OptionSpec<Integer> logLevelOption = optionsParser.acceptsAll(Arrays.asList("log", "l")).withRequiredArg().ofType(Integer.class).defaultsTo(1);
+        //OptionSpec<String> outputFileOption = optionsParser.acceptsAll(Arrays.asList("output", "out", "o")).withRequiredArg().ofType(String.class);
+        //OptionSpec<Integer> logLevelOption = optionsParser.acceptsAll(Arrays.asList("log", "l")).withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
         OptionSet optionSet = optionsParser.parse(args);
 
@@ -40,14 +41,14 @@ public class TCalculator {
         int depth = optionSet.has(depthOption) ? optionSet.valueOf(depthOption) : spreadsheet.length;
         boolean reversed = optionSet.has(reversedOption);
         boolean printAll = optionSet.has(printAllOption);
-        String outputFile = optionSet.valueOf(outputFileOption);
-        int logLevel = optionSet.valueOf(logLevelOption);
+        //String outputFile = optionSet.valueOf(outputFileOption);
+        //int logLevel = optionSet.valueOf(logLevelOption);
 
 
-        Path outputPath = outputFile != null ? Path.of(outputFile) : null;
-        boolean log = logLevel > 0;
-        boolean debug = logLevel > 1;
-        boolean trace = logLevel > 2;
+        //Path outputPath = outputFile != null ? Path.of(outputFile) : null;
+        //boolean log = logLevel > 0;
+        //boolean debug = logLevel > 1;
+        //boolean trace = logLevel > 2;
 
         if (reversed) ArrayUtils.reverse(spreadsheet);
 
@@ -60,17 +61,10 @@ public class TCalculator {
         var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
 
-        Class<?> c = CodeCompiler.compile("net.intcoder.tbravocalc.bc.Calculator", srcCode);
+        Class<PathGenerator> c = CodeCompiler.compile("net.intcoder.tbravocalc.calculator.PathGeneratorImpl", srcCode);
+        var pathGenerator = c.getDeclaredConstructor(PathHandler.class).newInstance(new PathHandlerImpl(target, printAll));
 
-        var outWriter = outputPath != null ? Files.newBufferedWriter(outputPath) : null;
-
-        var instance = c.getDeclaredConstructor(PathChecker.class)
-                .newInstance(new PathCheckerImpl(target));
-
-        var method = c.getDeclaredMethod("calculate", double[].class);
-        method.invoke(instance, (Object) spreadsheet);
-
-        if (outWriter != null) outWriter.close();
+        pathGenerator.start(spreadsheet);
     }
 
     public static void printUsage() {

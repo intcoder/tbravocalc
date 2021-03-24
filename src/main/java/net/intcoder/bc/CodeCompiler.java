@@ -1,4 +1,4 @@
-package net.intcoder.tbravocalc.bc;
+package net.intcoder.bc;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +9,11 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class CodeCompiler {
-    public static Class<?> compile(String fullClassName, String src) {
+    public static <T> Class<T> compile(String fullClassName, String src) {
         var compiled = compileToByteArray(fullClassName, src);
         var cl = new ByteArrayClassLoader(Map.of(fullClassName, compiled));
         try {
-            return cl.loadClass(fullClassName);
+            return (Class<T>) cl.loadClass(fullClassName);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Compilation error", e);
         }
