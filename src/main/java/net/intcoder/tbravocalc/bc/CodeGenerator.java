@@ -5,49 +5,19 @@ import org.apache.commons.lang3.StringUtils;
 public class CodeGenerator {
 
     private static final String forTemplate = """
-            for (double n0 : filteredList) {
+            for (int i0 = 0; i0 < spreadsheet.length; i0++) {
+                double n0 = spreadsheet[i0];
                 if (!continueCalculate) break;
-            
-            	<for>
-            }
-            """;
-
-    private static final String subForTemplate = """
-            for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
-                if (!continueCalculate) break;
-            
-            	var sum<n> = <sumn>;
-            	
-            	if (sum<n> == target) {
-            	    continueCalculate = false;
-            	}
-            	
-                if (sum<n> > minSum && sum<n> <= target) {
-            		minSum = sum<n>;
-                    pathPrinter.printPath(<cn>);
-                } else if (sum<n> <= target) {
-                	pathPrinter.debugPath(<cn>);
-                } else {
-                    pathPrinter.tracePath(<cn>);
-                }
                 
                 <for>
             }
             """;
 
-    private static final String subForTemplatePrintAll = """
-            for (double n<n> : filteredList.stream().skip(<n>).collect(Collectors.toList())) {
+    private static final String subForTemplate = """
+            for (int i<n> = i<n-1>+1; i<n> < spreadsheet.length; i<n>++) {
+                double n<n> = spreadsheet[i<n>];
                 if (!continueCalculate) break;
-            
-            	var sum<n> = <sumn>;
-                if (sum<n> >= minSum && sum<n> <= target) {
-            		minSum = sum<n>;
-                    pathPrinter.printPath(<cn>);
-                } else if (sum<n> <= target) {
-                	pathPrinter.debugPath(<cn>);
-                } else {
-                    pathPrinter.tracePath(<cn>);
-                }
+                continueCalculate = !pathChecker.check(<cn>);
                 
                 <for>
             }
@@ -59,48 +29,37 @@ public class CodeGenerator {
             import java.util.Arrays;
             import java.util.stream.Collectors;
             
-            import net.intcoder.tbravocalc.PathPrinter;
+            import net.intcoder.tbravocalc.calculator.PathChecker;
                         
             public class Calculator {
             
-                private PathPrinter pathPrinter;
+                private PathChecker pathChecker;
                 private boolean continueCalculate = true;
                 
-                public Calculator(PathPrinter pathPrinter) {
-                    this.pathPrinter = pathPrinter;
+                public Calculator(PathChecker pathChecker) {
+                    this.pathChecker = pathChecker;
                 }
             
-                public void calculate(double[] spreadsheet, double target) {
+                public void calculate(double... spreadsheet) {
                         
-                    var filteredList = Arrays.stream(spreadsheet).filter(n -> n <= target)
+                    var filteredList = Arrays.stream(spreadsheet)
                             .boxed()
                             .collect(Collectors.toList());
                         
-                    System.out.println("Size: " + filteredList.size());
-                        
-                    double minSum = 0;
-                        
                     <for>
-                        
-                    System.out.println("min sum = " + minSum);
                 }
             }
                         
             """;
 
-    private boolean printAll;
-
-    public CodeGenerator(boolean printAll) {
-        this.printAll = printAll;
-    }
 
     public String generate(int depth) {
-        var sb = new StringBuilder();
         var s = forTemplate;
 
         for (int i = 0; i < depth; i++) {
-            s = s.replace("<for>", printAll ? subForTemplatePrintAll : subForTemplate);
+            s = s.replace("<for>", subForTemplate);
             s = s.replace("<n>", String.valueOf(i+1));
+            s = s.replace("<n-1>", String.valueOf(i));
             s = s.replace("<sumn>", generateSumN(i+2));
             s = s.replace("<cn>", generateCN(i+2));
         }

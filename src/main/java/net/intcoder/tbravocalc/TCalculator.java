@@ -5,6 +5,8 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.intcoder.tbravocalc.bc.CodeCompiler;
 import net.intcoder.tbravocalc.bc.CodeGenerator;
+import net.intcoder.tbravocalc.calculator.PathChecker;
+import net.intcoder.tbravocalc.calculator.PathCheckerImpl;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,7 +35,8 @@ public class TCalculator {
         }
 
         double target = optionSet.valueOf(targetOption);
-        double[] spreadsheet = parseSpreadSheet(optionSet.valueOf(srcOption));
+
+        double[] spreadsheet = Arrays.stream(parseSpreadSheet(optionSet.valueOf(srcOption))).filter(n -> n <= target).toArray();
         int depth = optionSet.has(depthOption) ? optionSet.valueOf(depthOption) : spreadsheet.length;
         boolean reversed = optionSet.has(reversedOption);
         boolean printAll = optionSet.has(printAllOption);
@@ -54,56 +57,18 @@ public class TCalculator {
         System.out.println("Reversed: " + reversed);
         System.out.println("Print all paths: " + printAll);
 
-        var cg = new CodeGenerator(printAll);
+        var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
 
         Class<?> c = CodeCompiler.compile("net.intcoder.tbravocalc.bc.Calculator", srcCode);
 
         var outWriter = outputPath != null ? Files.newBufferedWriter(outputPath) : null;
 
-        var instance = c.getDeclaredConstructor(PathPrinter.class).newInstance(new PathPrinter() {
+        var instance = c.getDeclaredConstructor(PathChecker.class)
+                .newInstance(new PathCheckerImpl(target));
 
-            private final boolean writeToFile = outWriter != null;
-
-            @Override
-            public void printPath(double... path) {
-                print("", true, log, path);
-            }
-
-            @Override
-            public void debugPath(double... path) {
-                print("\tDEBUG: ", false, debug, path);
-            }
-
-            @Override
-            public void tracePath(double... path) {
-                print("\tTRACE: ", false, trace, path);
-            }
-
-            private void print(String prefix, boolean print, boolean write, double... path) {
-                var sb = new StringBuilder();
-                sb.append(prefix);
-                Arrays.stream(path).boxed().map(n -> n + " + ").forEach(sb::append);
-                sb.delete(sb.length()-3, sb.length());
-                sb.append(" = ").append(Arrays.stream(path).sum());
-
-                var s = sb.toString();
-
-                if (print) System.out.println(s);
-
-                if (writeToFile && write) {
-                    try {
-                        outWriter.write(s + "\n");
-                        outWriter.flush();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        var method = c.getDeclaredMethod("calculate", double[].class, Double.TYPE);
-        method.invoke(instance, spreadsheet, target);
+        var method = c.getDeclaredMethod("calculate", double[].class);
+        method.invoke(instance, (Object) spreadsheet);
 
         if (outWriter != null) outWriter.close();
     }
