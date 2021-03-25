@@ -61,10 +61,13 @@ public class TCalculator {
         var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
 
+        var handler = new PathHandlerImpl(target, printAll);
+
         Class<PathGenerator> c = CodeCompiler.compile("net.intcoder.tbravocalc.calculator.PathGeneratorImpl", srcCode);
-        var pathGenerator = c.getDeclaredConstructor(PathHandler.class).newInstance(new PathHandlerImpl(target, printAll));
+        var pathGenerator = c.getDeclaredConstructor(PathHandler.class).newInstance(handler);
 
         pathGenerator.start(spreadsheet);
+        handler.flushBuffer();
     }
 
     public static void printUsage() {
