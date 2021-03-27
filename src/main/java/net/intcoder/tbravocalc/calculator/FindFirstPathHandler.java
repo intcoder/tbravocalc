@@ -1,7 +1,5 @@
 package net.intcoder.tbravocalc.calculator;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.Arrays;
 
 public class FindFirstPathHandler extends PathHandlerImpl {
