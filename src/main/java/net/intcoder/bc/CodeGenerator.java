@@ -42,12 +42,8 @@ public class CodeGenerator {
                 }
             
                 public void start(double... spreadsheet) {
-                        
-                    var filteredList = Arrays.stream(spreadsheet)
-                            .boxed()
-                            .collect(Collectors.toList());
-                        
                     <for>
+                    pathHandler.finish();
                 }
             }
                         

@@ -50,6 +50,10 @@ public class PathHandlerImpl implements PathHandler {
         return false;
     }
 
+    @Override
+    public void finish() {
+    }
+
     public void flushBuffer() {
         counter = 0;
         if (buffer.isEmpty()) return;

@@ -5,9 +5,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.intcoder.bc.CodeCompiler;
 import net.intcoder.bc.CodeGenerator;
-import net.intcoder.tbravocalc.calculator.PathHandler;
-import net.intcoder.tbravocalc.calculator.PathHandlerImpl;
-import net.intcoder.tbravocalc.calculator.PathGenerator;
+import net.intcoder.tbravocalc.calculator.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,13 +59,13 @@ public class TCalculator {
         var cg = new CodeGenerator();
         var srcCode = cg.generate(depth);
 
-        var handler = new PathHandlerImpl(target, printAll);
+        //var handler = new FindFirstPathHandler(target);
+        var handler = new FindAllPathHandler(target);
 
         Class<PathGenerator> c = CodeCompiler.compile("net.intcoder.tbravocalc.calculator.PathGeneratorImpl", srcCode);
         var pathGenerator = c.getDeclaredConstructor(PathHandler.class).newInstance(handler);
 
         pathGenerator.start(spreadsheet);
-        handler.flushBuffer();
     }
 
     public static void printUsage() {
