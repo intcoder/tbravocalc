@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
-@RequiredArgsConstructor
-public class FindFirstPathHandler implements PathHandler {
-
-    private final double target;
+public class FindFirstPathHandler extends PathHandlerImpl {
 
     private CPath min = new CPath(0);
+
+    public FindFirstPathHandler(double target) {
+        super(target);
+    }
 
     @Override
     public boolean handle(double... path) {

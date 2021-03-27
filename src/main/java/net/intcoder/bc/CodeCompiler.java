@@ -45,7 +45,11 @@ public class CodeCompiler {
             fileManager.close();
 
             if (!success) {
-                throw new Exception(output.toString());
+                var sb = new StringBuilder();
+                //sb.append(output.toString()).append("\n");
+                diagnostics.getDiagnostics().stream().map(Diagnostic::toString).forEach(sb::append);
+
+                throw new CompileException(sb.toString());
             }
 
             var compiledFile = tmpDir.resolve(className + ".class");

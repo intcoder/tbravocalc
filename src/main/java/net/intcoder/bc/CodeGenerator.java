@@ -8,6 +8,7 @@ public class CodeGenerator {
             for (int i0 = 0; i0 < spreadsheet.length; i0++) {
                 double n0 = spreadsheet[i0];
                 if (!continueCalculate) break;
+                continueCalculate = !pathHandler.handle(n0);
                 
                 <for>
             }

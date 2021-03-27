@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
-@RequiredArgsConstructor
-public class VerbosePathHandler implements PathHandler {
-
-    private final double target;
+public class VerbosePathHandler extends PathHandlerImpl {
 
     private CPath min = new CPath(0);
+
+    public VerbosePathHandler(double target) {
+        super(target);
+    }
 
     @Override
     public boolean handle(double... path) {

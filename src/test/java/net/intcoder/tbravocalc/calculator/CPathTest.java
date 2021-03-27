@@ -10,5 +10,8 @@ class CPathTest {
     void testToString() {
         var cPath = new CPath(10, 5, 5);
         assertEquals("5.0 + 5.0 = 10.0", cPath.toString());
+
+        cPath = new CPath(5, 5);
+        assertEquals("5.0 = 5.0", cPath.toString());
     }
 }

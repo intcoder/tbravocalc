@@ -6,13 +6,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-@RequiredArgsConstructor
-public class FindAllPathHandler implements PathHandler {
-
-    private final double target;
+public class FindAllPathHandler extends PathHandlerImpl {
 
     private CPath min = new CPath(0);
     private final List<CPath> list = new LinkedList<>();
+
+    public FindAllPathHandler(double target) {
+        super(target);
+    }
 
     @Override
     public boolean handle(double... path) {
