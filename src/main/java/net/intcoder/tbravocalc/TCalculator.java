@@ -61,7 +61,15 @@ public class TCalculator {
         Class<PathGenerator> c = CodeCompiler.compile("net.intcoder.tbravocalc.calculator.PathGeneratorImpl", srcCode);
         var pathGenerator = c.getDeclaredConstructor(PathHandler.class).newInstance(handler);
 
+        System.out.println("\nPaths: ");
+        long startTime = System.currentTimeMillis();
         pathGenerator.start(spreadsheet);
+
+        long calculationTime = System.currentTimeMillis() - startTime;
+        System.out.println("\nCalculation time:");
+        System.out.println(calculationTime + " ms");
+        System.out.println(calculationTime/1000 + " s");
+        System.out.println(calculationTime/1000/60 + " m");
     }
 
     public static void printUsage() {
