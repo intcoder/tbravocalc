@@ -39,7 +39,7 @@ public class CodeCompiler {
             DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
             StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
             Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromStrings(Arrays.asList(srcCodeFile.toString()));
-            JavaCompiler.CompilationTask task = compiler.getTask(outputWriter, fileManager, diagnostics, List.of("--enable-preview", "--release", "15"), null, compilationUnits);
+            JavaCompiler.CompilationTask task = compiler.getTask(outputWriter, fileManager, diagnostics, null, null, compilationUnits);
             boolean success = task.call();
             fileManager.close();
 

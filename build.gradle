@@ -1,18 +1,17 @@
 plugins {
     id 'java'
     id 'application'
-    id 'io.freefair.lombok' version '5.3.0'
+    id 'io.freefair.lombok' version '6.0.0-m2'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group 'net.intcoder'
 version '1.0-SNAPSHOT'
-sourceCompatibility = 15
+sourceCompatibility = 16
 
 mainClassName = 'net.intcoder.tbravocalc.TCalculator'
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -28,17 +27,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs += "--enable-preview"
-}
-
-tasks.withType(Test) {
-    jvmArgs += "--enable-preview"
-}
-
-tasks.withType(JavaExec) {
-    jvmArgs += '--enable-preview'
 }
