@@ -1,7 +1,10 @@
 package net.intcoder.bc;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,5 +54,28 @@ class CodeCompilerTest {
         int result = (int) method.invoke(null);
 
         assertEquals(1, result);
+    }
+
+
+    /////////////////
+
+
+    @Test
+    @SneakyThrows
+    void name() {
+        Path root = Path.of("/tmp/tmp.ATVsRBUzTn/");
+        System.out.println(root.toAbsolutePath().toString());
+
+        var cg = new CodeGenerator();
+
+        for (int i = 0; i < 10; i++) {
+            var fileName = "compiled" + i + ".class";
+            Path file = root.resolve(fileName);
+
+            var srcCode = cg.generate(i);
+            byte[] compiled = CodeCompiler.compileToByteArray("net.intcoder.tbravocalc.calculator.PathGeneratorImpl", srcCode);
+
+            Files.write(file, compiled);
+        }
     }
 }
