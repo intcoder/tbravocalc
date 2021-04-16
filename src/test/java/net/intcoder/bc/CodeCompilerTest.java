@@ -63,7 +63,7 @@ class CodeCompilerTest {
     @Test
     @SneakyThrows
     void name() {
-        Path root = Path.of("/tmp/tmp.ATVsRBUzTn/");
+        Path root = Path.of("/tmp/tmp.V78zolyxSc/");
         System.out.println(root.toAbsolutePath().toString());
 
         var cg = new CodeGenerator();

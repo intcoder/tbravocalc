@@ -13,14 +13,14 @@ public class BytecodeGenerator implements Opcodes {
     }
 
     public ClassNode generate(int depth) {
-        //
+        return null;
     }
 
     /**
      * .version 60 0
      * .class public super net/intcoder/tbravocalc/calculator/PathGeneratorImpl
      * .super java/lang/Object
-     * .implements net/intcoder/tbravocalc/calculator/PathGenerator 
+     * .implements net/intcoder/tbravocalc/calculator/PathGenerator
      */
     protected void generateBase() {
         // Class
